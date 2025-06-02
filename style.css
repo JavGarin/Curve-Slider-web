@@ -1,3 +1,4 @@
+/* styles.css */
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +7,7 @@
 
 html, body {
     width: 100%;
-    height: 1000vh;
+    height: 1000vh; /* Keep for Lenis scroll effect */
     font-family: "Inter", sans-serif;
     background-color: #000;
     color: #fff;
@@ -82,4 +83,50 @@ canvas {
     );
     z-index: 1;
     pointer-events: none;
+}
+
+/* Loader Styles */
+.loader-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #1a1a1a; /* Dark background for loader */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Ensure it's on top */
+    opacity: 1;
+    transition: opacity 0.75s ease-out;
+}
+
+.loader-wrapper.hidden {
+    opacity: 0;
+    pointer-events: none; /* Disable interaction when hidden */
+}
+
+.loader-title {
+    color: #fff;
+    font-size: clamp(2.5rem, 6vw, 6rem); /* Responsive font size */
+    font-weight: 600;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    padding: 0 1rem; /* Add some padding for smaller screens */
+}
+
+.loader {
+  width: 60px; /* Slightly larger spinner */
+  height: 60px;
+  border-radius: 50%;
+  border: 6px solid rgba(255, 255, 255, 0.2); /* Lighter track */
+  border-top-color: #fff; /* White spinning part */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

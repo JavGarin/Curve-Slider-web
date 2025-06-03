@@ -189,12 +189,12 @@ function initializeScene() {
     camera.rotation.z = THREE.MathUtils.degToRad(-5);
 
     const slideTitles = [
-        "Field Unit",
-        "Astral Convergence",
-        "Eclipse Core",
-        "Luminous",
-        "Serenity",
-        "Nebula Point",
+        "Pluto",
+        "Jupiter",
+        "Saturn",
+        "Mars",
+        "Mercury",
+        "Helios",
         "Horizon",
     ];
 
@@ -205,7 +205,7 @@ function initializeScene() {
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
 
-        const fontSize = 140;
+        const fontSize = 125;
         ctx.font = `500 ${fontSize}px "Inter", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";

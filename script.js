@@ -205,7 +205,7 @@ function initializeScene() {
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
 
-        const fontSize = 125;
+        const fontSize = 130;
         ctx.font = `500 ${fontSize}px "Inter", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";

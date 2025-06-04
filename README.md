@@ -7,9 +7,6 @@ Un slider 3D curvo interactivo con efecto de scroll suave que muestra imágenes 
   <img src="https://i.ibb.co/6RkPQm61/Portada.png" alt="Portada del proyecto" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); width: 80%; max-width: 800px;"/>
 </p>
 
-<p align="center">
-  <img src="https://i.ibb.co/PZdhkNB9/imagen.jpg" alt="Demo del Curve Slider" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); width: 80%; max-width: 800px;"/>
-</p>
 
 ## 🚀 Características Principales
 
@@ -63,26 +60,6 @@ Un slider 3D curvo interactivo con efecto de scroll suave que muestra imágenes 
    }
    ```
 
-### 🎨 Personalización de Títulos
-
-Para agregar emojis y colores a los títulos:
-
-```javascript
-const slideTitles = [
-  "🪐 Pluto | #FF6B6B",
-  "♃ Jupiter | #4ECDC4", 
-  "🪐 Saturn | #45B7D1",
-  "♂️ Mars | #FFA07A",
-  "☿ Mercury | #98D8C8",
-  "☀️ Helios | #F9D423",
-  "🌅 Horizon | #FF9671"
-];
-
-// En updateTexture():
-ctx.fillStyle = color; // Extraer el color del string
-ctx.fillText(title.split('|')[0], x, y); // Mostrar solo la parte con emoji
-```
-
 ## 📦 Estructura de Archivos
 
 ```
@@ -95,28 +72,8 @@ ctx.fillText(title.split('|')[0], x, y); // Mostrar solo la parte con emoji
     │   ├── 🖼️ img1.avif
     │   └── 🖼️ img1.jpg (fallback)
     └── 📂 favicon_io
+    
 ```
-
-## 💡 Cómo Personalizar
-
-1. **Cambiar temas de colores**:
-   ```css
-   :root {
-     --primary-bg: #1a1a1a;
-     --text-color: rgba(255,255,255,0.8);
-   }
-   ```
-
-2. **Agregar más slides**:
-   ```javascript
-   const totalSlides = 10; // Actualizar este valor
-   ```
-
-3. **Ajustar curvatura**:
-   ```javascript
-   const curvature = 45; // Mayor valor = más curvatura
-   ```
-
 ## 📄 Licencia
 
 MIT © [Javier Garin](https://github.com/JavGarin)

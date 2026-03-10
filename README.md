@@ -1,85 +1,24 @@
+# 🌌 Sebastián Mora — Portfolio de Fotografía Nocturna
 
-# 🌈 Curve Slider - 3D Scroll Gallery ✨
+![Preview web](./public/screenshot-web.png)
 
-Un slider 3D curvo interactivo con efecto de scroll suave que muestra imágenes en un formato innovador.
+Un asombroso portfolio web diseñado para destacar la fotografía nocturna, caracterizado por una paleta íntima (60-30-10) y un **innovador Slider 3D Parabólico** (Coverflow Nativo) de altísimo rendimiento impulsado puramente por transformaciones CSS aceleradas por GPU, capaz de alcanzar **100% de performance en Lighthouse**.
 
-<p align="center">
-  <img src="https://i.ibb.co/6RkPQm61/Portada.png" alt="Portada del proyecto" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); width: 80%; max-width: 800px;"/>
-</p>
+## ✨ Características Especiales
 
+- **Animación "CoverFlow" Parabólica**: 100% Nativo DOM CSS `translate3d`. Sustituye las costosas y lentas mallas de Three.js por manipulación hiper-optimizada en el Compositor Layer del navegador (Cero pérdida de frames en dispositivos móviles).
+- **Scroll Infinito y Sedoso**: Implementado con [Lenis](https://lenis.studiofreight.com/), dotando al sitio de una fluidez espectacular que enlaza su bucle sin fin.
+- **GSAP Loader Anti-FOUC**: Secuencia de apertura elegante en dos fases, oculta tras una cortina negra absoluta para prevenir destellos des-estilizados de carga.
+- **Glassmorphism Dinámico**: Navbar, overlays y elementos flotantes inter-reactivos.
+- **Diseños y Proporciones Widescreen Profesionales**: Optimización cinemática visual para presentar medios pesados y vibrantes.
 
-## 🚀 Características Principales
+## 🚀 Tecnologías
 
-- 🎨 **Efecto visual 3D curvado** con Three.js
-- 🔄 **Scroll infinito** con transiciones suaves
-- ⚡ **Optimizado para rendimiento**
-- 📱 **Responsive design**
-- 💫 **Efectos de iluminación y profundidad**
-- ⏳ **Loader elegante** con tiempo mínimo garantizado
-
-## 🛠 Tecnologías Utilizadas
-
-| Tecnología       | Uso                     |
-|------------------|-------------------------|
-| ![Three.js](https://img.shields.io/badge/Three.js-r128-black?logo=three.js&logoColor=white) | Renderizado 3D |
-| ![Lenis](https://img.shields.io/badge/Lenis-1.0.27-blue) | Scroll suave |
-| ![AVIF](https://img.shields.io/badge/AVIF-JPG%20fallback-orange) | Formatos de imagen |
-| ![WebGL](https://img.shields.io/badge/WebGL-2.0-red?logo=webgl) | Aceleración gráfica |
-
-## 🎯 Lógica del Proyecto
-
-### 🔄 Flujo Principal
-
-1. **🔄 Precarga de Assets**
-   ```javascript
-   // Carga imágenes con fallback
-   img.src = `./assets/img/img${i}.avif`;
-   img.onerror = () => {
-     fallbackImg.src = `./assets/img/img${i}.jpg`;
-   };
-   ```
-
-2. **🎬 Animación 3D**
-   - Geometría de plano curvado
-   - Canvas dinámico como textura
-   - Efectos de iluminación
-
-3. **🖱 Interacción**
-   ```javascript
-   lenis.on("scroll", ({ scroll }) => {
-     targetScroll = scroll / limit;
-   });
-   ```
-
-4. **🔄 Renderizado Continuo**
-   ```javascript
-   function animate() {
-     updateTexture();
-     renderer.render(scene, camera);
-     requestAnimationFrame(animate);
-   }
-   ```
-
-## 📦 Estructura de Archivos
-
-```
-📦 curve-slider
-├── 📄 index.html
-├── 📄 style.css
-├── 📄 script.js
-└── 📂 assets
-    ├── 📂 img
-    │   ├── 🖼️ img1.avif
-    │   └── 🖼️ img1.jpg (fallback)
-    └── 📂 favicon_io
-    
-```
-## 📄 Licencia
-
-MIT © [Javier Garin](https://github.com/JavGarin)
+- **Vite** — Entorno de desarrollo ultrarrápido y empaquetador eficiente.
+- **Vanilla JavaScript Modules (ESM)** — Lógica de componentes ligeros e independientes sin librerías de UI como React/Vue.
+- **Lenis** — Manejo suave de interpolación de ruedas (Smooth Wheel Infinity Wraparound).
+- **GSAP** — Animación coreográfica robusta (GreenSock).
+- **Vercel** — Preparado para despliegue instantáneo mediante el archivo de reglas propio (`vercel.json`).
 
 ---
-
-<p align="center">
-✨ <em>Make it modern</em> ✨
-</p>
+**Diseñado y codificado con dedicación ☕ por [JavGarin](https://javiergarin.dev/).**

@@ -1,0 +1,498 @@
+/* ============================================================
+   SEBASTIÁN MORA — Night Photography Portfolio
+   style.css — Global Styles
+   Palette: #090b10 (60%) · #1a2035/#c8cdd8 (30%) · #c9a84c (10%)
+   ============================================================ */
+
+/* ── 0. CUSTOM PROPERTIES ─────────────────────────────── */
+:root {
+  /* Palette */
+  --color-base:       #090b10;
+  --color-surface:    #111520;
+  --color-muted:      #1a2035;
+  --color-text:       #c8cdd8;
+  --color-text-dim:   rgba(200, 205, 216, 0.45);
+  --color-accent:     #c9a84c;
+  --color-accent-dim: rgba(201, 168, 76, 0.25);
+  --color-white:      #f0f0f0;
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+
+  /* Spacing */
+  --space-nav: 2rem;
+
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── 1. RESET & BASE ───────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: auto; /* Lenis maneja el scroll */
+}
+
+html,
+body {
+  width: 100%;
+  height: 1000vh; /* espacio para scroll de Lenis */
+  background-color: var(--color-base);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: none; /* cursor personalizado */
+}
+
+/* Ocultar scrollbar manteniendo funcionalidad */
+::-webkit-scrollbar { display: none; }
+html { scrollbar-width: none; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul { list-style: none; }
+
+/* ── 2. LOADER ─────────────────────────────────────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: var(--color-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+.loader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.loader__name {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.loader__first,
+.loader__last {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  color: var(--color-white);
+  display: block;
+  transform: translateY(110%); /* animado por GSAP */
+  opacity: 0;
+}
+
+.loader__last {
+  color: var(--color-accent);
+  font-style: italic;
+}
+
+.loader__tagline {
+  font-family: var(--font-body);
+  font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  opacity: 0; /* animado por GSAP */
+}
+
+.loader__bar-track {
+  width: min(280px, 60vw);
+  height: 1px;
+  background: rgba(200, 205, 216, 0.15);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.loader__bar {
+  height: 100%;
+  width: 0%;
+  background: var(--color-accent);
+  border-radius: 1px;
+  transition: width 0.2s var(--ease-snappy);
+}
+
+.loader__counter {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--color-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 3. CURSOR ─────────────────────────────────────────── */
+#cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: difference;
+}
+
+.cursor__dot {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-white);
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s var(--ease-snappy),
+              opacity 0.2s ease;
+}
+
+.cursor__ring {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s var(--ease-smooth),
+              width 0.3s var(--ease-smooth),
+              height 0.3s var(--ease-smooth),
+              border-color 0.3s ease;
+}
+
+/* Cursor hover en links */
+body.cursor-hover .cursor__dot {
+  transform: translate(-50%, -50%) scale(0);
+}
+
+body.cursor-hover .cursor__ring {
+  width: 64px;
+  height: 64px;
+  border-color: var(--color-accent);
+}
+
+/* ── 4. HEADER / NAV ───────────────────────────────────── */
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: var(--space-nav);
+  opacity: 0; /* revelado por GSAP tras el loader */
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav__logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  cursor: none;
+}
+
+.nav__logo-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--color-white);
+  letter-spacing: 0.04em;
+}
+
+.nav__logo-sub {
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav__link {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  cursor: none;
+  transition: color 0.25s ease;
+  position: relative;
+}
+
+.nav__link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  transition: width 0.35s var(--ease-smooth);
+}
+
+.nav__link:hover {
+  color: var(--color-white);
+}
+
+.nav__link:hover::after {
+  width: 100%;
+}
+
+/* ── 5. HERO ───────────────────────────────────────────── */
+.hero {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  padding: 6rem var(--space-nav) 5rem;
+  pointer-events: none;
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hero__location {
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  opacity: 0; /* animado por GSAP */
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 6rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--color-white);
+  opacity: 0; /* animado por GSAP */
+}
+
+.hero__title em {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.hero__scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  opacity: 0; /* animado por GSAP */
+}
+
+.hero__scroll-line {
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--color-accent);
+  flex-shrink: 0;
+  animation: lineBreath 2.5s var(--ease-smooth) infinite;
+}
+
+@keyframes lineBreath {
+  0%, 100% { width: 40px; opacity: 0.6; }
+  50%       { width: 60px; opacity: 1;   }
+}
+
+/* ── 6. DOM SLIDER (Nativo CSS 3D Cilindro) ─────────────── */
+.slider-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; 
+  overflow: hidden;
+  z-index: 1;
+  display: block; /* Revelado por JS */
+  perspective: 1600px; /* Profundidad 3D VITAL */
+}
+
+/* El track es la "rueda" que gira sobre su eje X */
+.slider-track {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  /* rotateX() se controlará vía JS */
+}
+
+.slide {
+  position: absolute;
+  /* Tamaños profesionales panorámicos */
+  width: min(80vw, 1200px);
+  height: min(65vh, 800px);
+  
+  /* Centrado 50% Base (el translate3d -50% -50% hará el resto) */
+  top: 0; 
+  left: 0;  
+
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  
+  /* Gradiente viñeta */
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 11, 16, 0) 30%,
+    rgba(9, 11, 16, 0.7) 100%
+  );
+  
+  backface-visibility: hidden; /* No ver la cara de atras */
+}
+
+.slide__img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.slide__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.slide__series {
+  font-size: 0.8rem;
+  letter-spacing: 0.35em;
+  color: var(--color-accent);
+}
+
+.slide__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 300;
+  color: var(--color-white);
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+}
+
+/* ── 7. OVERLAY (vignette) ─────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 70% at 65% 50%,
+    transparent 30%,
+    rgba(9, 11, 16, 0.55) 75%,
+    rgba(9, 11, 16, 0.85) 100%
+  );
+}
+
+/* ── 8. FOOTER ─────────────────────────────────────────── */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.5rem var(--space-nav);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  opacity: 0; /* revelado por GSAP */
+}
+
+.footer__copy {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--color-text-dim);
+}
+
+.footer__link {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--color-text-dim);
+  cursor: none;
+  transition: color 0.25s ease;
+}
+
+.footer__link:hover {
+  color: var(--color-accent);
+}
+
+/* ── 9. RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --space-nav: 1.25rem;
+  }
+
+  .nav__links {
+    gap: 1.5rem;
+  }
+
+  .hero {
+    padding: 5rem 1.25rem 4rem;
+    align-items: flex-start;
+    padding-top: 40vh;
+  }
+
+  .cursor__dot,
+  .cursor__ring {
+    display: none; /* no hay mouse en táctil */
+  }
+
+  html, body {
+    cursor: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav__links {
+    gap: 1rem;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+}

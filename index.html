@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090b10" />
+
+  <!-- SEO -->
+  <title>Sebastián Mora — Night Photography</title>
+  <meta name="description" content="Portfolio de fotografía nocturna y astrofotografía de Sebastián Mora. Capturas de larga exposición desde el Desierto de Atacama, Chile." />
+  <meta name="keywords" content="fotografía nocturna, astrofotografía, larga exposición, Atacama, Sebastián Mora, portfolio fotógrafo" />
+  <meta name="author" content="Sebastián Mora" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://sebastianmora.photo" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Sebastián Mora — Night Photography" />
+  <meta property="og:description" content="Capturas de larga exposición desde el Desierto de Atacama, Chile." />
+  <meta property="og:url" content="https://sebastianmora.photo" />
+  <meta property="og:image" content="https://curve-slider-web.vercel.app/screenshot-web.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sebastián Mora — Night Photography" />
+  <meta name="twitter:description" content="Portfolio de fotografía nocturna y astrofotografía." />
+  <meta name="twitter:image" content="https://curve-slider-web.vercel.app/screenshot-web.png" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Preload LCP Image (Desktop & Mobile) -->
+  <link rel="preload" as="image" href="/assets/img/mobile/img1.avif" media="(max-width: 768px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/assets/img/img1.avif" media="(min-width: 769px)" fetchpriority="high" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" />
+  </noscript>
+
+  <!-- Prevenir FOUC crítico -->
+  <style>
+    body { background: #090b10; margin: 0; overflow: hidden; }
+    #loader {
+      position: fixed; inset: 0; z-index: 99999;
+      background-color: #090b10;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.75s ease;
+      color: #fff; font-family: sans-serif;
+      will-change: opacity;
+    }
+    .slider-container { display: none; } /* Oculto hasta que el JS lo construya */
+  </style>
+
+  <!-- Entry point -->
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+
+  <!-- ───── LOADER ───── -->
+  <div id="loader" aria-hidden="true">
+    <div class="loader__inner">
+      <div class="loader__name">
+        <span class="loader__first">Sebastián</span>
+        <span class="loader__last">Mora</span>
+      </div>
+      <p class="loader__tagline">Night Photography</p>
+      <div class="loader__bar-track">
+        <div class="loader__bar" id="loaderBar"></div>
+      </div>
+      <span class="loader__counter" id="loaderCounter">0%</span>
+    </div>
+  </div>
+
+  <!-- ───── CURSOR ───── -->
+  <div id="cursor" aria-hidden="true">
+    <div class="cursor__dot"></div>
+    <div class="cursor__ring"></div>
+  </div>
+
+  <!-- ───── HEADER / NAV ───── -->
+  <header id="header">
+    <nav class="nav" role="navigation" aria-label="Navegación principal">
+      <a href="#" class="nav__logo" aria-label="Ir al inicio">
+        <span class="nav__logo-name">S. Mora</span>
+        <span class="nav__logo-sub">Photography</span>
+      </a>
+      <ul class="nav__links" role="list">
+        <li><a href="#" class="nav__link">Work</a></li>
+        <li><a href="#" class="nav__link">About</a></li>
+        <li><a href="#" class="nav__link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ───── MAIN ───── -->
+  <main>
+    <!-- Hero overlay text -->
+    <section class="hero" aria-label="Presentación">
+      <div class="hero__content">
+        <p class="hero__location">Atacama Desert · Chile</p>
+        <h1 class="hero__title">
+          <em>Capturing</em><br />the silence<br />of the night
+        </h1>
+        <p class="hero__scroll-hint" aria-hidden="true">
+          <span class="hero__scroll-line"></span>
+          Scroll
+        </p>
+      </div>
+    </section>
+
+    <!-- DOM Slider Container -->
+    <div class="slider-container" id="sliderContainer" aria-label="Galería de trabajos">
+      <div class="slider-track" id="sliderTrack">
+        <!-- Slides inyectados por JS -->
+      </div>
+    </div>
+
+    <!-- Radial overlay (vignette) -->
+    <div class="overlay" aria-hidden="true"></div>
+  </main>
+
+  <!-- ───── FOOTER ───── -->
+  <footer class="footer" role="contentinfo">
+    <p class="footer__copy">© 2025 Sebastián Mora</p>
+    <p class="footer__contact">
+      <a href="#" class="footer__link">hello@sebastianmora.photo</a>
+    </p>
+  </footer>
+
+</body>
+</html>

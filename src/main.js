@@ -6,6 +6,9 @@ import './style.css'
 import { initLoader } from './loader.js'
 import { initSlider } from './slider.js'
 import { initCursor } from './cursor.js'
+import { injectSpeedInsights } from '@vercel/speed-insights'
+
+injectSpeedInsights()
 
 async function main() {
   // Cursor personalizado (independiente del loader)

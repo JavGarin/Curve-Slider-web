@@ -433,6 +433,58 @@ body.cursor-hover .cursor__ring {
   text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
 }
 
+/* ── INTERACCIÓN DE SLIDE (OBSERVAR / EXPANDIR) ─────────── */
+.slide {
+  cursor: pointer;
+  user-select: none;
+}
+
+.slide__tag {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.85rem;
+  background: rgba(9, 11, 16, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  border-radius: 999px;
+  color: rgba(240, 240, 240, 0.82);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: all 0.3s var(--ease-smooth);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.slide__tag-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slide:hover .slide__tag {
+    background: rgba(9, 11, 16, 0.75);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .slide:hover .slide__tag-dot {
+    transform: scale(1.35);
+    box-shadow: 0 0 10px var(--color-accent);
+  }
+}
+
 /* ── 7. OVERLAY (vignette) ─────────────────────────────── */
 .overlay {
   position: fixed;
@@ -484,19 +536,75 @@ body.cursor-hover .cursor__ring {
     --space-nav: 1.25rem;
   }
 
+  /* Slider en Mobile: Profundidad controlada para GPU móvil */
+  .slider-container {
+    perspective: 1000px;
+  }
+
+  /* Proporción fotográfica auténtica (4:3) para respetar el encuadre de astrofotografía */
   .slide {
-    /* Sombra optimizada para GPU móvil y pantallas de alta densidad (Retina/3x DPR) */
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+    width: min(92vw, 480px);
+    height: auto;
+    aspect-ratio: 4 / 3;
+    max-height: 48vh;
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(201, 168, 76, 0.22);
+  }
+
+  .slide__content {
+    padding: 1.25rem 1rem;
+    gap: 0.3rem;
+  }
+
+  .slide__series {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+  }
+
+  .slide__title {
+    font-size: clamp(1.4rem, 5vw, 1.95rem);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+  }
+
+  /* Tag "Ver obra": sin backdrop-filter para liberar la GPU en cada frame de scroll */
+  .slide__tag {
+    top: 0.85rem;
+    right: 0.85rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.6rem;
+    gap: 0.45rem;
+    background: rgba(9, 11, 16, 0.88);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .nav__links {
     gap: 1.5rem;
   }
 
+  /* Hero en mobile: ubicado en la zona superior para no colisionar con las fotografías */
   .hero {
-    padding: 5rem 1.25rem 4rem;
+    padding: 4.75rem 1.25rem 1.5rem;
     align-items: flex-start;
-    padding-top: 40vh;
+    justify-content: flex-start;
+    pointer-events: none;
+  }
+
+  .hero__location {
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    margin-bottom: -0.5rem;
+  }
+
+  .hero__title {
+    font-size: clamp(1.35rem, 5vw, 1.8rem);
+    line-height: 1.15;
+  }
+
+  .hero__scroll-hint {
+    display: none; /* Despeja espacio visual en pantallas pequeñas */
   }
 
   #cursor,
@@ -530,57 +638,7 @@ body.cursor-hover .cursor__ring {
   }
 }
 
-/* ── 10. INTERACCIÓN DE SLIDE (OBSERVAR / EXPANDIR) ─────── */
-.slide {
-  cursor: pointer;
-  user-select: none;
-}
-
-.slide__tag {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.4rem 0.85rem;
-  background: rgba(9, 11, 16, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: none;
-  border-radius: 999px;
-  color: rgba(240, 240, 240, 0.82);
-  font-size: 0.65rem;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  transition: all 0.3s var(--ease-smooth);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-}
-
-.slide__tag-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
-  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s ease;
-}
-
-.slide:hover .slide__tag {
-  background: rgba(9, 11, 16, 0.75);
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.slide:hover .slide__tag-dot {
-  transform: scale(1.35);
-  box-shadow: 0 0 10px var(--color-accent);
-}
-
-/* ── 11. LIGHTBOX / DETALLE CINEMATOGRÁFICO ──────────────── */
+/* ── 10. LIGHTBOX / DETALLE CINEMATOGRÁFICO ──────────────── */
 body.lightbox-open {
   overflow: hidden;
   /* Prevenir rubber-band/bounce de iOS Safari cuando el lightbox está abierto */
@@ -869,12 +927,15 @@ body.lightbox-open {
   }
 
   .slide__tag {
-    top: 1rem;
-    right: 1rem;
+    top: 0.85rem;
+    right: 0.85rem;
     padding: 0.35rem 0.75rem;
     font-size: 0.6rem;
     gap: 0.45rem;
-    border: none;
+    background: rgba(9, 11, 16, 0.88);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
 }
 

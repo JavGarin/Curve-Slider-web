@@ -128,19 +128,27 @@ function buildCarousel(images) {
     let startX = 0
     let startY = 0
     let startTime = 0
+    let isTouchPointer = false
 
     slide.addEventListener('pointerdown', (e) => {
       startX = e.clientX
       startY = e.clientY
       startTime = Date.now()
+      isTouchPointer = e.pointerType === 'touch'
     })
 
     slide.addEventListener('click', (e) => {
+      // Soporte de accesibilidad: si el click es sintético (teclado/lector de pantalla sin pointerdown)
+      if (e.detail === 0 || startTime === 0) {
+        openLightbox(i)
+        return
+      }
       const dx = Math.abs(e.clientX - startX)
       const dy = Math.abs(e.clientY - startY)
       const dt = Date.now() - startTime
-      // Si se movió más de 8px o tardó más de 450ms, es un gesto de scroll/drag y se ignora
-      if (dx > 8 || dy > 8 || dt > 450) return
+      // Tolerancia ergonómica: en touch el pulgar tiene un parche de contacto mayor (14px)
+      const moveThreshold = isTouchPointer ? 14 : 8
+      if (dx > moveThreshold || dy > moveThreshold || dt > 500) return
       openLightbox(i)
     })
 
@@ -158,8 +166,9 @@ function buildCarousel(images) {
     slides.push(slide)
   }
 
-  // Tilt muy delicado en el Wrapper principal para asimetría
-  track.style.transform = `rotateY(-8deg) rotateZ(-3deg)`
+  // Tilt asimétrico en desktop; neutro y perfectamente centrado en mobile para evitar desalineación
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768
+  track.style.transform = isMobile ? 'none' : 'rotateY(-8deg) rotateZ(-3deg)'
 
   return slides
 }
@@ -193,17 +202,16 @@ export async function initSlider(onProgress) {
   let winHeight = window.innerHeight
   let winWidth = window.innerWidth
 
-  // Detección de dispositivo táctil/móvil — evaluada una sola vez para evitar
-  // crear un nuevo MediaQueryList en cada llamada al handler de resize
+  const track = document.getElementById('sliderTrack')
   const touchMediaQuery = window.matchMedia('(pointer: coarse)')
   const isTouchDevice = () => touchMediaQuery.matches || window.innerWidth <= 768
-  let lerpFactor = isTouchDevice() ? 0.20 : 0.08
 
-  // Tamaño de separación virtual (px de scroll para saltar de 1 slide a la siguiente)
-  let PX_PER_SLIDE = winHeight * 1.2
-  // Unidades de curva: qué tan atrás se van en Z al alejarse del centro
-  let CURVE_AMOUNT = winWidth > 768 ? 450 : 250
-  let Y_OFFSET_MULTIPLIER = winHeight * 0.7 
+  // Parámetros adaptativos calibrados: ágiles y reactivos en mobile, etéreos en desktop
+  let isMobile = isTouchDevice()
+  let lerpFactor = isMobile ? 0.38 : 0.08
+  let PX_PER_SLIDE = isMobile ? Math.round(winHeight * 0.42) : Math.round(winHeight * 1.1)
+  let CURVE_AMOUNT = isMobile ? 90 : 450
+  let Y_OFFSET_MULTIPLIER = isMobile ? Math.round(winHeight * 0.48) : Math.round(winHeight * 0.7)
 
   // Filtro anti-jank en resize con debounce: evitar cálculos excesivos por
   // el colapso/expansión de la barra de URL en iOS Safari
@@ -217,10 +225,14 @@ export async function initSlider(onProgress) {
       if (newWinWidth !== winWidth || Math.abs(newWinHeight - winHeight) > 120) {
         winHeight = newWinHeight
         winWidth = newWinWidth
-        PX_PER_SLIDE = winHeight * 1.2
-        CURVE_AMOUNT = winWidth > 768 ? 450 : 250
-        Y_OFFSET_MULTIPLIER = winHeight * 0.7 
-        lerpFactor = isTouchDevice() ? 0.20 : 0.08
+        isMobile = isTouchDevice()
+        PX_PER_SLIDE = isMobile ? Math.round(winHeight * 0.42) : Math.round(winHeight * 1.1)
+        CURVE_AMOUNT = isMobile ? 90 : 450
+        Y_OFFSET_MULTIPLIER = isMobile ? Math.round(winHeight * 0.48) : Math.round(winHeight * 0.7)
+        lerpFactor = isMobile ? 0.38 : 0.08
+        if (track) {
+          track.style.transform = isMobile ? 'none' : 'rotateY(-8deg) rotateZ(-3deg)'
+        }
         requestRender()
       }
     }, 150) // 150ms es suficiente para filtrar el rebote de barra de URL iOS
@@ -249,7 +261,7 @@ export async function initSlider(onProgress) {
     requestRender()
   })
 
-  // Despertar el loop ante interacción táctil — se usa `requestRender` que es idémpotente
+  // Despertar el loop ante interacción táctil — se usa `requestRender` que es idempotente
   // IMPORTANTE: no llamar raf() directamente aquí porque necesita el timestamp de rAF
   window.addEventListener('touchstart', requestRender, { passive: true })
   window.addEventListener('touchmove', requestRender, { passive: true })
@@ -258,6 +270,9 @@ export async function initSlider(onProgress) {
   function updateSlides() {
     // "progress" general del carrusel
     const progress = currentScroll / PX_PER_SLIDE
+    const cullingThreshold = isMobile ? 2.15 : 2.85
+    const rotXMultiplier = isMobile ? 8 : 18
+    const opacityFalloff = isMobile ? 0.45 : 0.35
 
     for (let i = 0; i < slides.length; i++) {
       const slide = slides[i]
@@ -268,7 +283,7 @@ export async function initSlider(onProgress) {
       const absDist = Math.abs(dist)
 
       // Off-screen Culling: Ocultar slides fuera de pantalla para liberar la GPU móvil
-      if (absDist > 2.85) {
+      if (absDist > cullingThreshold) {
         if (slide._visible !== false) {
           slide._visible = false
           slide.style.visibility = 'hidden'
@@ -282,12 +297,12 @@ export async function initSlider(onProgress) {
       // 1. Posición Y: separación vertical
       const posY = dist * Y_OFFSET_MULTIPLIER
 
-      // 2. Curvatura en Z y Rotación X (Simulación 3D parabólica)
+      // 2. Curvatura en Z y Rotación X (Simulación 3D parabólica adaptada para mobile)
       const posZ = Math.pow(absDist, 2) * -CURVE_AMOUNT
-      const rotX = -dist * 18
+      const rotX = -dist * rotXMultiplier
 
       // 3. Opacidad y Z-Index
-      const opacity = Math.max(0, 1 - (absDist * 0.35))
+      const opacity = Math.max(0, 1 - (absDist * opacityFalloff))
       const zIndex = Math.round(100 - absDist * 10)
 
       // Guardia para zIndex: evitar invalidar capas de composición si el valor no cambió
@@ -305,14 +320,15 @@ export async function initSlider(onProgress) {
   function raf(time) {
     lenis.raf(time)
 
-    // Lerp adaptativo: ágil en mobile (0.20) para cero lag táctil, flotante en desktop (0.08)
+    // Lerp adaptativo: ágil en mobile (0.38) para cero lag táctil, flotante en desktop (0.08)
     const delta = targetScroll - currentScroll
     currentScroll += delta * lerpFactor
 
     updateSlides()
 
-    // Condición de reposo (Idle loop): apagar el RAF cuando no haya movimiento activo
-    const isMoving = Math.abs(delta) > 0.05 || (lenis.velocity && Math.abs(lenis.velocity) > 0.05)
+    // Condición de reposo (Idle loop): umbral calibrado para evitar micro-stutters al levantar el dedo
+    const idleThreshold = isMobile ? 0.08 : 0.04
+    const isMoving = Math.abs(delta) > idleThreshold || (lenis.velocity && Math.abs(lenis.velocity) > idleThreshold)
     if (!isMoving) {
       currentScroll = targetScroll
       updateSlides()

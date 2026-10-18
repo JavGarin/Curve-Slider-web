@@ -45,12 +45,15 @@ html {
 html,
 body {
   width: 100%;
-  height: 1000vh; /* espacio para scroll de Lenis */
+  /* height es controlado por JS en slider.js (body.style.height = '1000vh')
+     para que html no tenga doble scroll inesperado en algunos browsers */
   background-color: var(--color-base);
   color: var(--color-text);
   font-family: var(--font-body);
   font-weight: 300;
   overflow-x: hidden;
+  /* touch-action: pan-y garantiza que el browser pase los gestos verticales a Lenis en mobile */
+  touch-action: pan-y;
 }
 
 /* Solo ocultar el cursor nativo si el dispositivo cuenta con ratón (hover fino) */
@@ -85,6 +88,9 @@ ul { list-style: none; }
   align-items: center;
   justify-content: center;
   pointer-events: all;
+  /* Al ocultarse vía display:none el pointer-events ya no aplica, pero
+     si algo interrumpe la animación GSAP, este fallback lo anula */
+  touch-action: none; /* bloquear touch en loader intencionalmente */
 }
 
 .loader__inner {
@@ -347,6 +353,10 @@ body.cursor-hover .cursor__ring {
   z-index: 1;
   display: block; /* Revelado por JS */
   perspective: 1600px; /* Profundidad 3D VITAL */
+  /* Permitir gestos táctiles verticales para que Lenis los capture */
+  touch-action: pan-y;
+  /* Evitar que iOS Safari cancele el scroll por el bounce nativo */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* El track es la "rueda" que gira sobre su eje X */
@@ -573,6 +583,8 @@ body.cursor-hover .cursor__ring {
 /* ── 11. LIGHTBOX / DETALLE CINEMATOGRÁFICO ──────────────── */
 body.lightbox-open {
   overflow: hidden;
+  /* Prevenir rubber-band/bounce de iOS Safari cuando el lightbox está abierto */
+  touch-action: none;
 }
 
 .detail-view {
@@ -829,6 +841,9 @@ body.lightbox-open {
     max-height: 92dvh;
     overflow-y: auto;
     width: 96vw;
+    /* Permitir scroll vertical dentro del card sin interferir con swipe de cierre */
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 
   .detail-view__header {
@@ -866,6 +881,8 @@ body.lightbox-open {
 /* ── 12. INFO MODAL (WORK / ABOUT / CONTACT) ──────────────── */
 body.info-modal-open {
   overflow: hidden;
+  /* Prevenir rubber-band/bounce de iOS Safari cuando el modal está abierto */
+  touch-action: none;
 }
 
 .info-modal {

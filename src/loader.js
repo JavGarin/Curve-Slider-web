@@ -6,6 +6,9 @@
 import gsap from 'gsap'
 
 export function initLoader(onComplete) {
+  // Bloquear scroll durante la carga (clase CSS lo gestiona)
+  document.body.classList.add('is-loading')
+
   const el = {
     loader:   document.getElementById('loader'),
     first:    document.querySelector('.loader__first'),
@@ -90,6 +93,8 @@ export function initLoader(onComplete) {
     const exitTl = gsap.timeline({
       onComplete: () => {
         if (el.loader) el.loader.style.display = 'none'
+        // Liberar scroll/touch al terminar la animación del loader
+        document.body.classList.remove('is-loading')
         onComplete?.()
       },
     })

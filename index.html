@@ -51,8 +51,13 @@
       background-color: #090b10;
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      /* overflow: hidden se gestiona por JS tras la carga para no bloquear touch en mobile */
       color: #c8cdd8;
+    }
+    /* Bloquear scroll solo mientras carga el loader (clase añadida/quitada por JS) */
+    body.is-loading {
+      overflow: hidden;
+      touch-action: none;
     }
     #loader {
       position: fixed;

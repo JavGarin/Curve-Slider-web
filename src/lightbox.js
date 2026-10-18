@@ -161,10 +161,14 @@ function updateContent(index) {
     imgEl.onload = () => {
       imgEl.style.opacity = '1'
     }
-    // Fallback jpg si avif no está disponible
+    // Fallback jpg si avif no está disponible — respeta el directorio correcto (mobile vs desktop)
+    // Guard anti-loop: si ya es .jpg, no volver a intentar
     imgEl.onerror = () => {
-      imgEl.src = `/assets/img/img${photoNum}.jpg`
-      imgEl.style.opacity = '1'
+      if (imgEl.src.includes('.avif')) {
+        const fallbackDir = isMobile ? '/assets/img/mobile' : '/assets/img'
+        imgEl.src = `${fallbackDir}/img${photoNum}.jpg`
+        imgEl.style.opacity = '1'
+      }
     }
   }
 

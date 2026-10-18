@@ -180,7 +180,10 @@ export async function initSlider(onProgress) {
     duration: 1.2, // Ligero y suave
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    infinite: true // Loop natural en body
+    smoothTouch: false,      // En touch, Lenis usa el scroll nativo del browser (mejor UX táctil)
+    touchMultiplier: 1.5,    // Sensibilidad táctil adecuada sin ser excesiva
+    infinite: true,          // Loop natural en body
+    gestureOrientation: 'vertical', // Solo capturar gestos verticales; horizontales libres para swipe
   })
 
   // Inicializar el visor de detalle profesional con soporte de pausa de Lenis
@@ -190,8 +193,10 @@ export async function initSlider(onProgress) {
   let winHeight = window.innerHeight
   let winWidth = window.innerWidth
 
-  // Detección de dispositivo táctil/móvil para respuesta adaptativa sin input lag
-  const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768
+  // Detección de dispositivo táctil/móvil — evaluada una sola vez para evitar
+  // crear un nuevo MediaQueryList en cada llamada al handler de resize
+  const touchMediaQuery = window.matchMedia('(pointer: coarse)')
+  const isTouchDevice = () => touchMediaQuery.matches || window.innerWidth <= 768
   let lerpFactor = isTouchDevice() ? 0.20 : 0.08
 
   // Tamaño de separación virtual (px de scroll para saltar de 1 slide a la siguiente)
@@ -200,20 +205,25 @@ export async function initSlider(onProgress) {
   let CURVE_AMOUNT = winWidth > 768 ? 450 : 250
   let Y_OFFSET_MULTIPLIER = winHeight * 0.7 
 
-  // Filtro anti-jank en resize: evitar saltos por colapso/expansión de la barra de URL en móviles
+  // Filtro anti-jank en resize con debounce: evitar cálculos excesivos por
+  // el colapso/expansión de la barra de URL en iOS Safari
+  let resizeTimer = null
   window.addEventListener('resize', () => {
-    const newWinWidth = window.innerWidth
-    const newWinHeight = window.innerHeight
+    if (resizeTimer) clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      const newWinWidth = window.innerWidth
+      const newWinHeight = window.innerHeight
 
-    if (newWinWidth !== winWidth || Math.abs(newWinHeight - winHeight) > 120) {
-      winHeight = newWinHeight
-      winWidth = newWinWidth
-      PX_PER_SLIDE = winHeight * 1.2
-      CURVE_AMOUNT = winWidth > 768 ? 450 : 250
-      Y_OFFSET_MULTIPLIER = winHeight * 0.7 
-      lerpFactor = isTouchDevice() ? 0.20 : 0.08
-      requestRender()
-    }
+      if (newWinWidth !== winWidth || Math.abs(newWinHeight - winHeight) > 120) {
+        winHeight = newWinHeight
+        winWidth = newWinWidth
+        PX_PER_SLIDE = winHeight * 1.2
+        CURVE_AMOUNT = winWidth > 768 ? 450 : 250
+        Y_OFFSET_MULTIPLIER = winHeight * 0.7 
+        lerpFactor = isTouchDevice() ? 0.20 : 0.08
+        requestRender()
+      }
+    }, 150) // 150ms es suficiente para filtrar el rebote de barra de URL iOS
   })
 
   let currentScroll = 0
@@ -239,7 +249,8 @@ export async function initSlider(onProgress) {
     requestRender()
   })
 
-  // Despertar inmediatamente el loop ante interacción táctil o wheel
+  // Despertar el loop ante interacción táctil — se usa `requestRender` que es idémpotente
+  // IMPORTANTE: no llamar raf() directamente aquí porque necesita el timestamp de rAF
   window.addEventListener('touchstart', requestRender, { passive: true })
   window.addEventListener('touchmove', requestRender, { passive: true })
   window.addEventListener('wheel', requestRender, { passive: true })

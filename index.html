@@ -69,7 +69,7 @@
       justify-content: center;
       will-change: opacity;
     }
-    #header, .footer, .hero__location, .hero__title, .hero__scroll-hint {
+    #header, .footer, .hero__location, .hero__title, .hero__scroll-hint, #scrollHint {
       opacity: 0;
     }
     .slider-container {
@@ -136,6 +136,14 @@
         </p>
       </div>
     </section>
+
+    <!-- Indicador de Scroll Minimalista -->
+    <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+      <div class="scroll-hint__mouse">
+        <span class="scroll-hint__wheel"></span>
+      </div>
+      <span class="scroll-hint__label">Scroll</span>
+    </div>
 
     <!-- DOM Slider Container -->
     <div class="slider-container" id="sliderContainer" aria-label="Galería de trabajos">

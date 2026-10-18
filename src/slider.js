@@ -6,6 +6,7 @@
  */
 import Lenis from 'lenis'
 import { initLightbox, openLightbox } from './lightbox.js'
+import { setNavModalLenis } from './nav-modal.js'
 
 const SLIDE_COUNT = 7
 const SLIDE_TITLES = [
@@ -189,14 +190,17 @@ export async function initSlider(onProgress) {
     duration: 1.2, // Ligero y suave
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    smoothTouch: false,      // En touch, Lenis usa el scroll nativo del browser (mejor UX táctil)
-    touchMultiplier: 1.5,    // Sensibilidad táctil adecuada sin ser excesiva
-    infinite: true,          // Loop natural en body
-    gestureOrientation: 'vertical', // Solo capturar gestos verticales; horizontales libres para swipe
+    syncTouch: true,              // Virtual scroll táctil con loop infinito continuo en touch
+    syncTouchLerp: 0.085,         // Inercia táctil suave y ágil al soltar el dedo
+    touchInertiaExponent: 1.6,    // Desaceleración orgánica
+    touchMultiplier: 1.25,        // Sensibilidad precisa al tacto
+    infinite: true,               // Scroll infinito continuo bidireccional sin topes
+    gestureOrientation: 'vertical', // Gestos horizontales libres para swipe de cierre en modales/lightbox
   })
 
-  // Inicializar el visor de detalle profesional con soporte de pausa de Lenis
+  // Inicializar el visor de detalle profesional y modal de navegación con control de Lenis
   initLightbox(lenis)
+  setNavModalLenis(lenis)
 
   // Cache de dimensiones para evitar forced reflows durante el scroll
   let winHeight = window.innerHeight
@@ -242,6 +246,8 @@ export async function initSlider(onProgress) {
   let targetScroll = 0
   let lastScroll = 0
   let isRunning = false
+  const scrollHint = document.getElementById('scrollHint')
+  let isScrollHintHidden = false
 
   function requestRender() {
     if (!isRunning) {
@@ -325,6 +331,19 @@ export async function initSlider(onProgress) {
     currentScroll += delta * lerpFactor
 
     updateSlides()
+
+    // Ocultar suavemente el indicador de scroll cuando el usuario comienza a desplazarse
+    if (scrollHint) {
+      const shouldHide = Math.abs(currentScroll) > 35
+      if (shouldHide !== isScrollHintHidden) {
+        isScrollHintHidden = shouldHide
+        if (shouldHide) {
+          scrollHint.classList.add('is-hidden')
+        } else {
+          scrollHint.classList.remove('is-hidden')
+        }
+      }
+    }
 
     // Condición de reposo (Idle loop): umbral calibrado para evitar micro-stutters al levantar el dedo
     const idleThreshold = isMobile ? 0.08 : 0.04

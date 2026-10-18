@@ -530,15 +530,88 @@ body.cursor-hover .cursor__ring {
   color: var(--color-accent);
 }
 
+/* ── 8.1 SCROLL HINT (INDICADOR MINIMALISTA) ────────────── */
+.scroll-hint {
+  position: fixed;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  pointer-events: none;
+  opacity: 0; /* Revelado por GSAP en _revealUI */
+  transition: opacity 0.45s var(--ease-smooth),
+              transform 0.45s var(--ease-smooth);
+}
+
+.scroll-hint.is-hidden {
+  opacity: 0 !important;
+  transform: translateX(-50%) translateY(8px);
+}
+
+.scroll-hint__mouse {
+  width: 16px;
+  height: 26px;
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  border-radius: 999px;
+  background: rgba(9, 11, 16, 0.55);
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.scroll-hint__wheel {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 2px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 6px var(--color-accent);
+  transform: translateX(-50%);
+  animation: scrollWheelGlide 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.scroll-hint__label {
+  font-family: var(--font-body);
+  font-size: 0.52rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  opacity: 0.75;
+}
+
+@keyframes scrollWheelGlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0);
+  }
+  20% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(9px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(13px);
+  }
+}
+
 /* ── 9. RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 768px) {
   :root {
     --space-nav: 1.25rem;
   }
 
-  /* Slider en Mobile: Profundidad controlada para GPU móvil */
+  /* Slider en Mobile: Profundidad controlada y touch-action libre de límites para loop infinito */
   .slider-container {
     perspective: 1000px;
+    touch-action: none;
   }
 
   /* Proporción fotográfica auténtica (4:3) para respetar el encuadre de astrofotografía */
@@ -580,8 +653,14 @@ body.cursor-hover .cursor__ring {
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
+  /* Botones de navegación mobile más finos y elegantes */
   .nav__links {
-    gap: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .nav__link {
+    font-size: 0.60rem;
+    letter-spacing: 0.16em;
   }
 
   /* Hero en mobile: ubicado en la zona superior para no colisionar con las fotografías */
@@ -607,6 +686,23 @@ body.cursor-hover .cursor__ring {
     display: none; /* Despeja espacio visual en pantallas pequeñas */
   }
 
+  /* Ajuste de escala para el indicador de scroll en mobile */
+  .scroll-hint {
+    bottom: max(1.4rem, env(safe-area-inset-bottom, 1.4rem));
+    gap: 0.35rem;
+  }
+
+  .scroll-hint__mouse {
+    width: 15px;
+    height: 24px;
+    border-color: rgba(201, 168, 76, 0.5);
+  }
+
+  .scroll-hint__label {
+    font-size: 0.48rem;
+    letter-spacing: 0.24em;
+  }
+
   #cursor,
   .cursor__dot,
   .cursor__ring {
@@ -628,7 +724,12 @@ body.cursor-hover .cursor__ring {
 
 @media (max-width: 480px) {
   .nav__links {
-    gap: 1rem;
+    gap: 0.85rem;
+  }
+
+  .nav__link {
+    font-size: 0.54rem;
+    letter-spacing: 0.13em;
   }
 
   .footer {

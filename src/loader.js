@@ -22,6 +22,7 @@ export function initLoader(onComplete) {
     location: document.querySelector('.hero__location'),
     title:    document.querySelector('.hero__title'),
     scroll:   document.querySelector('.hero__scroll-hint'),
+    scrollHint: document.getElementById('scrollHint'),
   }
 
   let imagesReady = false
@@ -105,7 +106,7 @@ export function initLoader(onComplete) {
         duration: 0.45,
         ease: 'power2.inOut',
       })
-      .to([el.header, el.footer], {
+      .to([el.header, el.footer, el.scrollHint], {
         opacity: 1,
         duration: 0.6,
         ease: 'power2.out',

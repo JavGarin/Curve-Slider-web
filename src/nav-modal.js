@@ -6,6 +6,11 @@
 let modalEl = null
 let currentView = null
 let lastFocusedElement = null
+let lenisInstance = null
+
+export function setNavModalLenis(lenis) {
+  lenisInstance = lenis
+}
 
 export function initNavModal() {
   modalEl = document.getElementById('infoModal')
@@ -67,6 +72,7 @@ export function openNavModal(viewName) {
   modalEl.setAttribute('aria-hidden', 'false')
   modalEl.classList.add('is-open')
   document.body.classList.add('info-modal-open')
+  lenisInstance?.stop()
 }
 
 export function closeNavModal() {
@@ -81,6 +87,7 @@ export function closeNavModal() {
   modalEl.setAttribute('inert', '')
   modalEl.setAttribute('aria-hidden', 'true')
   document.body.classList.remove('info-modal-open')
+  lenisInstance?.start()
 
   // Restaurar el foco accesible al disparador original
   if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {

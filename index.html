@@ -40,24 +40,39 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" media="print" onload="this.media='all'" />
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" />
-  </noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" />
 
-  <!-- Prevenir FOUC crítico -->
+  <!-- Stylesheet principal (bloqueante para evitar cualquier flash de contenido crudo) -->
+  <link rel="stylesheet" href="/src/style.css" />
+
+  <!-- CSS crítico inline (garantiza frame 0 en negro y loader sin FOUC) -->
   <style>
-    body { background: #090b10; margin: 0; overflow: hidden; }
-    #loader {
-      position: fixed; inset: 0; z-index: 99999;
+    html, body {
       background-color: #090b10;
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity 0.75s ease;
-      color: #fff; font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      color: #c8cdd8;
+    }
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background-color: #090b10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       will-change: opacity;
     }
-    .slider-container { display: none; } /* Oculto hasta que el JS lo construya */
+    #header, .footer, .hero__location, .hero__title, .hero__scroll-hint {
+      opacity: 0;
+    }
+    .slider-container {
+      display: none;
+    }
+    #cursor, .detail-view, .info-modal {
+      visibility: hidden;
+    }
   </style>
 
   <!-- Entry point -->
@@ -94,9 +109,9 @@
         <span class="nav__logo-sub">Photography</span>
       </a>
       <ul class="nav__links" role="list">
-        <li><a href="#" class="nav__link">Work</a></li>
-        <li><a href="#" class="nav__link">About</a></li>
-        <li><a href="#" class="nav__link">Contact</a></li>
+        <li><a href="#work" class="nav__link" data-nav="work">Work</a></li>
+        <li><a href="#about" class="nav__link" data-nav="about">About</a></li>
+        <li><a href="#contact" class="nav__link" data-nav="contact">Contact</a></li>
       </ul>
     </nav>
   </header>
@@ -132,9 +147,141 @@
   <footer class="footer" role="contentinfo">
     <p class="footer__copy">© 2025 Sebastián Mora</p>
     <p class="footer__contact">
-      <a href="#" class="footer__link">hello@sebastianmora.photo</a>
+      <a href="#contact" class="footer__link" data-nav="contact">hello@sebastianmora.photo</a>
     </p>
   </footer>
+
+  <!-- ───── DETAIL VIEW (LIGHTBOX PROFESIONAL) ───── -->
+  <div id="detailView" class="detail-view" aria-hidden="true" inert role="dialog" aria-modal="true" aria-label="Detalle de fotografía">
+    <div class="detail-view__backdrop" id="detailBackdrop"></div>
+
+    <div class="detail-view__header">
+      <span class="detail-view__badge">High Resolution Master</span>
+      <button class="detail-view__close" id="detailCloseBtn" aria-label="Cerrar detalle">
+        <span class="detail-view__close-label">Close</span>
+        <svg class="detail-view__close-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navegación lateral desktop -->
+    <button class="detail-view__nav detail-view__nav--prev" id="detailPrevBtn" aria-label="Fotografía anterior">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <button class="detail-view__nav detail-view__nav--next" id="detailNextBtn" aria-label="Fotografía siguiente">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+
+    <div class="detail-view__card" id="detailCard">
+      <div class="detail-view__media">
+        <img id="detailImg" class="detail-view__img" src="" alt="" />
+        <span class="detail-view__counter" id="detailCounter">1 / 7</span>
+      </div>
+      
+      <div class="detail-view__info">
+        <div class="detail-view__title-group">
+          <p class="detail-view__series" id="detailSeries">— 01</p>
+          <h2 class="detail-view__title" id="detailTitle">Atacama I</h2>
+          <p class="detail-view__location" id="detailLocation">Valle de la Muerte · Desierto de Atacama</p>
+        </div>
+
+        <div class="detail-view__tech" id="detailTechBadge">
+          <span class="detail-view__tech-dot"></span>
+          <span class="detail-view__tech-text" id="detailTech">Sony A7 IV · 24mm · f/1.4 · 20s · ISO 3200</span>
+        </div>
+
+        <p class="detail-view__desc" id="detailDesc">Captura de larga exposición revelando el cielo nocturno.</p>
+
+        <p class="detail-view__hint">Swipe o pulsa [Esc] para cerrar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── INFO MODAL (WORK / ABOUT / CONTACT) ───── -->
+  <div id="infoModal" class="info-modal" aria-hidden="true" inert role="dialog" aria-modal="true">
+    <div class="info-modal__backdrop" id="infoModalBackdrop"></div>
+    <div class="info-modal__card">
+      <button class="info-modal__close" id="infoModalClose" aria-label="Cerrar">
+        <span class="info-modal__close-text">Cerrar</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- SECCIÓN: WORK -->
+      <div class="info-modal__view" id="view-work">
+        <span class="info-modal__tag">— Serie Fotográfica</span>
+        <h2 class="info-modal__title">Selected Works</h2>
+        <p class="info-modal__subtitle">Desierto de Atacama · Chile (2024–2025)</p>
+        <div class="info-modal__body">
+          <p>
+            Una colección documental de 7 capturas nocturnas realizadas en una de las regiones más áridas y de mayor altitud del planeta. Cada imagen explora la tensión silenciosa entre la geología del altiplano y la inmensidad lumínica del cosmos austral.
+          </p>
+          <ul class="info-modal__list">
+            <li><strong>Ubicaciones:</strong> Valle de la Muerte, Salar de Tara, ALMA Observatory, El Tatio.</li>
+            <li><strong>Técnica:</strong> Larga exposición, sensores Full Frame y lentes gran angular ultra-luminosos.</li>
+            <li><strong>Copias de Colección:</strong> Impresiones Fine Art certificadas en papel de algodón Hahnemühle disponibles bajo pedido.</li>
+          </ul>
+        </div>
+        <button class="info-modal__btn" id="workExploreBtn">Explorar Galería</button>
+      </div>
+
+      <!-- SECCIÓN: ABOUT -->
+      <div class="info-modal__view" id="view-about">
+        <span class="info-modal__tag">— Biografía & Visión</span>
+        <h2 class="info-modal__title">Sebastián Mora</h2>
+        <p class="info-modal__subtitle">Astrofotógrafo & Explorador de Terreno</p>
+        <div class="info-modal__body">
+          <p>
+            Especializado en paisaje nocturno y astrofotografía de campo amplio. Durante más de ocho años he recorrido los salares, volcanes y mesetas del norte chileno documentando la atmósfera antes de la llegada del alba.
+          </p>
+          <p>
+            Mi trabajo busca transmitir el recogimiento y la escala del universo visible a simple vista cuando se elimina cualquier rastro de contaminación lumínica urbana.
+          </p>
+          <div class="info-modal__awards">
+            <p class="info-modal__awards-title">Reconocimientos & Trayectoria:</p>
+            <p>✦ Shortlist — Astronomy Photographer of the Year (2024)</p>
+            <p>✦ Mención de Honor — International Photography Awards (2023)</p>
+            <p>✦ Publicaciones en National Geographic Traveler y Cielo Austral</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: CONTACT -->
+      <div class="info-modal__view" id="view-contact">
+        <span class="info-modal__tag">— Comunicación Directa</span>
+        <h2 class="info-modal__title">Get in Touch</h2>
+        <p class="info-modal__subtitle">Asignaciones, Licencias & Fine Art Prints</p>
+        <div class="info-modal__body">
+          <p>
+            Disponible para comisiones editoriales, expediciones astronómicas guiadas en el Desierto de Atacama y adquisición de obras para colecciones públicas o privadas.
+          </p>
+          <div class="info-modal__contact-box">
+            <div class="info-modal__contact-item">
+              <span class="info-modal__contact-label">Email Principal</span>
+              <a href="mailto:hello@sebastianmora.photo" class="info-modal__contact-value">hello@sebastianmora.photo</a>
+            </div>
+            <div class="info-modal__contact-item">
+              <span class="info-modal__contact-label">Base Operativa</span>
+              <span class="info-modal__contact-value">San Pedro de Atacama & Santiago, Chile</span>
+            </div>
+            <div class="info-modal__contact-item">
+              <span class="info-modal__contact-label">Portafolios & Redes</span>
+              <span class="info-modal__contact-value">@sebastianmora.photo · Behance · 500px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
 </body>
 </html>

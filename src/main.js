@@ -6,6 +6,7 @@ import './style.css'
 import { initLoader } from './loader.js'
 import { initSlider } from './slider.js'
 import { initCursor } from './cursor.js'
+import { initNavModal } from './nav-modal.js'
 import { injectSpeedInsights } from '@vercel/speed-insights'
 
 injectSpeedInsights()
@@ -14,16 +15,17 @@ async function main() {
   // Cursor personalizado (independiente del loader)
   initCursor()
 
-  // Iniciar slider: pasa el callback de progreso al loader
-  let loaderController = null
+  // Modal para Work, About y Contact
+  initNavModal()
 
-  const sliderPromise = initSlider((loaded, total) => {
-    loaderController?.setProgress(loaded, total)
+  // Iniciar loader primero para que el controlador esté listo de inmediato
+  const loaderController = initLoader(() => {
+    // UI revealed — listo
   })
 
-  // Iniciar loader: cuando termina, el slider ya está listo
-  loaderController = initLoader(() => {
-    // UI revealed — nada extra por ahora
+  // Iniciar slider pasando el progreso de precarga al loader
+  const sliderPromise = initSlider((loaded, total) => {
+    loaderController.setProgress(loaded, total)
   })
 
   await sliderPromise
